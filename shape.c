@@ -65,10 +65,10 @@ void set_shape(Shape *shape, int type) {
 	case 7: // I
 		shape->num_cubes = 4;
 		shape->cubes = malloc(sizeof(Point) * 4);
-		setPoint(&shape->cubes[0], -1, 0);
-		setPoint(&shape->cubes[1], 0, 0);
-		setPoint(&shape->cubes[2], 1, 0);
-		setPoint(&shape->cubes[3], 2, 0);
+		setPoint(&shape->cubes[0], 0, 0);
+		setPoint(&shape->cubes[1], 1, 0);
+		setPoint(&shape->cubes[2], 2, 0);
+		setPoint(&shape->cubes[3], 3, 0);
 		break;
 
 	case 8: // O
@@ -95,7 +95,7 @@ Shape* new_shape(int x, int y, int type){
 	Shape* shape = malloc(sizeof(Shape));
 	shape->pos.x = x;
 	shape->pos.y = y;
-	shape->color = (int) rand() % 8;
+	shape->color = (int) rand() % 7 + 1;
 
 	set_shape(shape,type);
 	
@@ -163,15 +163,15 @@ void rotate_right(Shape *shape){
 }
 
 
-int collide(Point** placed_cubes, int num_placed_cubes, Shape* shape){
-	for(int i = 0; i < num_placed_cubes; i ++){
-		Point *placed = placed_cubes[i];
-		for(int k = 0; k < shape->num_cubes; k++){
-			if((placed->x) == (shape->cubes[k].x + shape->pos.x) &&
-				 (placed->y) == (shape->cubes[k].y + shape->pos.y))
-				return 1;
-		}
+int collide(int** placed_cubes, Shape* shape){
+
+	for(int k = 0; k < shape->num_cubes; k++){
+		int x = (shape->cubes[k].x + shape->pos.x);
+		int y = (shape->cubes[k].y + shape->pos.y);
+		if(placed_cubes[y-1][x-1] != 0) return 1;
+
 	}
+	
 	return 0;
 }
 

@@ -31,7 +31,7 @@ void shape_render(WINDOW* win, Shape* shape);
 void point_render(WINDOW* win, Point* shape);
 void rotate_right(Shape* shape);
 
-int collide(Point** placed_cubes, int num_placed_cubes, Shape* shape);
+int collide(int** placed_cubes, Shape* shape);
 int outside(Shape shape, int x, int y, int width, int height);
 
 
