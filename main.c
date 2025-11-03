@@ -10,6 +10,10 @@ void init_colors_once(void);
 void remove_row(int **placed_cubes, int w, int h);
 Shape *generate_shape(int x, int y, int type);
 void render_cubes(WINDOW *win, int **placed_cubes);
+void render_grid();
+
+WINDOW *game_win;
+int width, height, startx, starty;
 
 int main() {
 
@@ -30,9 +34,12 @@ int main() {
 	init_colors_once();
 	int ymax,xmax;
 	getmaxyx(stdscr,ymax,xmax);
-		
-	WINDOW *game_win;
-	int width=(10)*2, height=10,startx=(xmax-width)/2, starty=(ymax-height)/2;
+
+
+	width = (10) * 2;
+	height = 10;
+	startx = (xmax - width) / 2;
+	starty=(ymax-height)/2;
 	
 	game_win = newwin(height, width,starty, startx);
 
@@ -44,15 +51,10 @@ int main() {
 	start_color();
 
 	while (1) {
-		wclear(game_win);
+		//		wclear(game_win);
 		box(game_win, 0, 0);
 
-
-		for(int y = 1; y < height-1; y ++){
-			for(int x = 1; x < width-1/2-3; x += 2) {
-				mvwprintw(game_win, y,x," .");
-			}
-		}
+		render_grid();
 
 		render_cubes(game_win,placed_cubes);
 
@@ -67,7 +69,7 @@ int main() {
 
 
 		wrefresh(game_win);
-				
+		
 		int ch = getch();
 		if (ch == 'd' && !outside(*shape, 1, 0, width, height)) 
 			shape->pos.x+=1;
@@ -98,6 +100,7 @@ int main() {
         
 		remove_row(placed_cubes,8,8);
 
+		
 		usleep(16*1000);
 	}
 		
@@ -135,6 +138,14 @@ void init_colors_once(void) {
 	init_pair(7, COLOR_WHITE, COLOR_BLACK);
 }
 
+void render_grid() {
+	for(int y = 1; y < height-1; y ++){
+		for(int x = 1; x < width-1/2-3; x += 2) {
+			mvwprintw(game_win, y,x," . ");
+		}
+	}
+}
+
 void remove_row(int **placed_cubes, int w, int h) {
 
 	int rows_to_clear[8] = {0};
@@ -154,19 +165,33 @@ void remove_row(int **placed_cubes, int w, int h) {
 	// Clear rows
 	for(int y = 0; y < 8; y++){
     if(rows_to_clear[y]){
-			for(int x = 0; x < 8; x++) placed_cubes[y][x] = 0;
+			for(int x = 0; x < 8; x++){
+				placed_cubes[y][x] = 0;
+				render_grid();
+				render_cubes(game_win, placed_cubes);
+
+				wrefresh(game_win);
+				usleep(1000*50);
+			}
     }
 	}
-
+	
 	// Clear columns
 	for(int x = 0; x < 8; x++){
     if(cols_to_clear[x]){
-			for(int y = 0; y < 8; y++) placed_cubes[y][x] = 0;
+      for (int y = 0; y < 8; y++) {
+				placed_cubes[y][x] = 0;
+				render_grid();
+				render_cubes(game_win, placed_cubes);
+
+				wrefresh(game_win);
+				usleep(1000*50);
+        
+			} 
     }
 	}
-
-
 }
+
 void render_cubes(WINDOW *win, int **placed_cubes){
 	for(int y = 0; y < 8; y ++ ){
 		for(int x = 0; x < 8; x ++ ){
